@@ -31,5 +31,5 @@ check:
 
 # Create a new backstage app
 generate: check
-	BACKSTAGE_APP_NAME=backstage npx -y @backstage/create-app@latest --path .
+	BACKSTAGE_APP_NAME=backstage npx -y @backstage/create-app@latest --path . --next
 
