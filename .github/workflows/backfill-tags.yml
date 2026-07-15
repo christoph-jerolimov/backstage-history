@@ -6,6 +6,11 @@ name: Backfill Backstage release tags
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - claude/github-action-backstage-weekly-ixhmcq
+    paths:
+      - .github/workflows/backfill-tags.yml
 
 permissions:
   contents: write
