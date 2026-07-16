@@ -25,7 +25,7 @@ jobs:
 
       - name: Remove all files and folders except .git and .github
         run: |
-          find . -mindepth 1 -maxdepth 1 ! -name '.git' ! -name '.github' -exec rm -rf {} +
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' ! -name '.github' ! -name '.patches' -exec rm -rf {} +
 
       - name: Generate a new Backstage app
         env:
@@ -67,7 +67,7 @@ jobs:
             console.log('All', expected.length, 'plugin types verified.');
           "
 
-      - name: Generate plugins
+      - name: Generate packages
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
         run: |
@@ -94,8 +94,14 @@ jobs:
 
           yarn install
 
+      - name: Apply patches for upstream template bugs
+        run: |
+          for patch in .patches/*.patch; do
+            echo "Applying $patch"
+            git apply "$patch"
+          done
+
       - name: Build all packages
-        continue-on-error: true
         run: |
           yarn tsc
           yarn build:all

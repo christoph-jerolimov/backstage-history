@@ -1,0 +1,11 @@
+--- a/plugins/catalog-backend-module-provider-example/src/provider/ProviderExampleProvider.ts
++++ b/plugins/catalog-backend-module-provider-example/src/provider/ProviderExampleProvider.ts
+@@ -86,7 +86,7 @@
+             type: 'full',
+             entities,
+           });
+-        } catch (error) {
++        } catch (error: any) {
+           logger.error(`Refresh failed`, error);
+         }
+       },
