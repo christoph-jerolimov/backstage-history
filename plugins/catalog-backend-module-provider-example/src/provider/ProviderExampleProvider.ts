@@ -12,7 +12,7 @@ import {
   SchedulerServiceTaskRunner,
 } from '@backstage/backend-plugin-api';
 
-export type ExampleProviderOptions = {
+export type ProviderExampleProviderOptions = {
   /**
    * The logger to use.
    */
@@ -25,13 +25,13 @@ export type ExampleProviderOptions = {
   scheduler: SchedulerService;
 };
 
-export class ExampleProvider implements EntityProvider {
+export class ProviderExampleProvider implements EntityProvider {
   static fromConfig(
     configRoot: Config,
-    options: ExampleProviderOptions,
-  ): ExampleProvider[] {
+    options: ProviderExampleProviderOptions,
+  ): ProviderExampleProvider[] {
     return readProviderConfigs(configRoot).map(providerConfig => {
-      return new ExampleProvider({
+      return new ProviderExampleProvider({
         id: providerConfig.id,
         target: providerConfig.target,
         logger: options.logger,
@@ -61,7 +61,7 @@ export class ExampleProvider implements EntityProvider {
 
   /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getProviderName} */
   getProviderName() {
-    return `ExampleProvider:${this.#id}`;
+    return `ProviderExampleProvider:${this.#id}`;
   }
 
   /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.connect} */

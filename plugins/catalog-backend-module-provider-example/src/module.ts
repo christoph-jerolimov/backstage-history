@@ -3,10 +3,10 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
-import { ExampleProvider } from './provider/ExampleProvider';
+import { ProviderExampleProvider } from './provider/ProviderExampleProvider';
 
-export const catalogModuleExample = createBackendModule({
-  moduleId: 'example-provider',
+export const catalogModuleProviderExample = createBackendModule({
+  moduleId: 'provider-example-provider',
   pluginId: 'catalog',
   register({ registerInit }) {
     registerInit({
@@ -18,7 +18,7 @@ export const catalogModuleExample = createBackendModule({
       },
       async init({ logger, scheduler, config, processing }) {
         processing.addEntityProvider(
-          ExampleProvider.fromConfig(config, {
+          ProviderExampleProvider.fromConfig(config, {
             logger,
             scheduler,
           }),

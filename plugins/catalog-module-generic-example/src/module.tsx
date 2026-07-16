@@ -1,6 +1,6 @@
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
 
-export const catalogModuleExampleFe = createFrontendModule({
+export const catalogModuleGenericExample = createFrontendModule({
   pluginId: 'catalog',
   extensions: [
     /* TODO */

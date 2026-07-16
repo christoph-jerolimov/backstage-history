@@ -14,7 +14,7 @@ const DEFAULT_SCHEDULE: SchedulerServiceTaskScheduleDefinition = {
   },
 }
 
-export type ExampleProviderProviderConfig = {
+export type ProviderExampleProviderProviderConfig = {
   id: string;
   target: string;
   schedule: SchedulerServiceTaskScheduleDefinition;
@@ -29,9 +29,9 @@ export type ExampleProviderProviderConfig = {
  */
 export function readProviderConfigs(
   config: Config,
-): ExampleProviderProviderConfig[] {
+): ProviderExampleProviderProviderConfig[] {
   const providersConfig = config.getOptionalConfig(
-    'catalog.providers.exampleProvider',
+    'catalog.providers.providerExampleProvider',
   );
   if (!providersConfig) {
     return [];
@@ -60,7 +60,7 @@ export function readProviderConfigs(
 export function readProviderConfig(
   id: string,
   config: Config,
-): ExampleProviderProviderConfig {
+): ProviderExampleProviderProviderConfig {
 
   const target = config.getString('target');
 

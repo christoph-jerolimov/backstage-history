@@ -1,10 +1,10 @@
-import { ExampleProvider } from './ExampleProvider';
+import { ProviderExampleProvider } from './ProviderExampleProvider';
 import { mockServices } from '@backstage/backend-test-utils';
 
-describe('ExampleProvider', () => {
+describe('ProviderExampleProvider', () => {
   it('should read entities from the target', async () => {
     const logger = mockServices.logger.mock();
-    const provider = new ExampleProvider({
+    const provider = new ProviderExampleProvider({
       id: 'test',
       target: 'https://example.com',
       logger: mockServices.logger.mock(),

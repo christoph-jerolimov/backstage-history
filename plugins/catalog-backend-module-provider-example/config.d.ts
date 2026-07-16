@@ -4,9 +4,9 @@ export interface Config {
   catalog?: {
     providers?: {
       /**
-       * ExampleProvider configuration.
+       * ProviderExampleProvider configuration.
        */
-      exampleProvider?:
+      providerExampleProvider?:
         | {
             /**
              * The target that this provider should consume.

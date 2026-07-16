@@ -3,9 +3,9 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 
-export const catalogModuleExampleBe = createBackendModule({
+export const catalogModuleGenericExample = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'example-be',
+  moduleId: 'generic-example',
   register(reg) {
     reg.registerInit({
       deps: { logger: coreServices.logger },
