@@ -1,4 +1,5 @@
 import { Config } from '@backstage/config';
+import { serializeError, stringifyError } from '@backstage/errors';
 import {
   DeferredEntity,
   EntityProvider,
@@ -86,8 +87,9 @@ export class ProviderExampleProvider implements EntityProvider {
             type: 'full',
             entities,
           });
-        } catch (error: any) {
-          logger.error(`Refresh failed`, error);
+        } catch (error) {
+          const err = error instanceof Error ? error : new Error(stringifyError(error));
+          logger.error(`Refresh failed: ${stringifyError(error)}`, serializeError(err));
         }
       },
     });
