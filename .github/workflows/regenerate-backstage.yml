@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 24
 
-      - name: Remove all files and folders except .git and .github
+      - name: Remove generated files
         run: |
           find . -mindepth 1 -maxdepth 1 ! -name '.git' ! -name '.github' ! -name '.patches' -exec rm -rf {} +
 
