@@ -11,7 +11,7 @@
            });
          } catch (error) {
 -          logger.error(`Refresh failed`, error);
-+          logger.error(`Refresh failed: ${stringifyError(error)}`, serializeError(error));
++          logger.error(`Refresh failed: ${stringifyError(error)}`, serializeError(error) as any);
          }
        },
      });
