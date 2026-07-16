@@ -86,7 +86,7 @@ export class ProviderExampleProvider implements EntityProvider {
             type: 'full',
             entities,
           });
-        } catch (error) {
+        } catch (error: any) {
           logger.error(`Refresh failed`, error);
         }
       },
