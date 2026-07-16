@@ -79,9 +79,9 @@ jobs:
 
           # Use known pluginIds to avoid interactive pluginPackage prompt;
           # moduleIds are chosen to avoid directory conflicts between types.
-          yarn new --select frontend-plugin-module --option pluginId=catalog --option moduleId=example-fe --skip-install
-          yarn new --select backend-plugin-module  --option pluginId=catalog --option moduleId=example-be --skip-install
-          yarn new --select catalog-provider-module   --option moduleId=example --skip-install
+          yarn new --select frontend-plugin-module --option pluginId=catalog --option moduleId=generic-example --skip-install
+          yarn new --select backend-plugin-module  --option pluginId=catalog --option moduleId=generic-example --skip-install
+          yarn new --select catalog-provider-module   --option moduleId=provider-example --skip-install
           yarn new --select scaffolder-backend-module --option moduleId=example --skip-install
 
           yarn new --select web-library  --option name=example-web --skip-install
