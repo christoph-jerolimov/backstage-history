@@ -69,4 +69,8 @@ backend.add(import('@backstage/plugin-signals-backend'));
 // mcp actions plugin
 backend.add(import('@backstage/plugin-mcp-actions-backend'));
 
+backend.add(import('@internal/backstage-plugin-example-backend'));
+backend.add(import('@internal/backstage-plugin-catalog-backend-module-example-be'));
+backend.add(import('@internal/backstage-plugin-catalog-backend-module-example'));
+backend.add(import('@internal/backstage-plugin-scaffolder-backend-module-example'));
 backend.start();
