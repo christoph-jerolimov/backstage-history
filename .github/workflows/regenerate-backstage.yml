@@ -35,6 +35,133 @@ jobs:
         run: |
           BACKSTAGE_APP_NAME=backstage npx -y @backstage/create-app@latest --path .
 
+      - name: Verify the available plugin types offered by yarn new
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+        run: |
+          # 'yarn new' has no non-interactive way to list its templates, so we
+          # drive the interactive prompt through a pipe: the down-arrow key
+          # presses page through the (paginated) template list so every entry
+          # is rendered at least once, and Ctrl+C aborts the prompt before
+          # anything is generated.
+          LISTING="$( { printf '\033[B%.0s' $(seq 1 30); sleep 15; printf '\003'; } | yarn new 2>&1 || true )"
+
+          # Strip ANSI escape sequences and extract the template names from
+          # the rendered choices, which look like '❯ frontend-plugin - A new
+          # frontend plugin'.
+          ACTUAL_TYPES="$(printf '%s\n' "$LISTING" \
+            | tr -d '\r' \
+            | sed 's/\x1b\[[0-9;]*[A-Za-z]//g' \
+            | sed -nE 's/^[^a-zA-Z0-9]*([a-z0-9][a-z0-9-]*) - .*/\1/p' \
+            | LC_ALL=C sort -u)"
+
+          # The plugin/package types we expect 'yarn new' to offer. The
+          # legacy-frontend-plugin template is not expected because it is
+          # filtered out for apps using the new frontend system.
+          EXPECTED_TYPES="$(LC_ALL=C sort <<'EOF'
+          backend-plugin
+          backend-plugin-module
+          catalog-provider-module
+          cli-module
+          frontend-plugin
+          frontend-plugin-module
+          node-library
+          plugin-common-library
+          plugin-node-library
+          plugin-web-library
+          scaffolder-backend-module
+          scaffolder-field-extension-module
+          web-library
+          EOF
+          )"
+
+          echo "Plugin types offered by yarn new:"
+          printf '%s\n' "$ACTUAL_TYPES"
+
+          if ! diff <(printf '%s\n' "$EXPECTED_TYPES") <(printf '%s\n' "$ACTUAL_TYPES"); then
+            echo "::error::The plugin types offered by 'yarn new' changed (see diff above)." \
+              "Update the expected list in this workflow and add/remove the matching" \
+              "'yarn new' invocations in the 'Generate a plugin for each type' step."
+            exit 1
+          fi
+
+      - name: Generate a plugin for each type
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+        run: |
+          failed=0
+
+          # yarn new exits with code 0 even when templating fails, so verify
+          # that the expected directory was actually created. Pass --broken
+          # as the first argument for templates that are known to fail so
+          # that they only produce a warning; once they start working again
+          # their output is committed automatically.
+          generate() {
+            known_broken=0
+            if [ "$1" = "--broken" ]; then
+              known_broken=1
+              shift
+            fi
+            expected_path="$1"
+            shift
+            echo "::group::yarn new $* (-> $expected_path)"
+            yarn new "$@" --skip-install || true
+            echo "::endgroup::"
+            if [ -d "$expected_path" ]; then
+              echo "Generated $expected_path"
+            elif [ "$known_broken" = "1" ]; then
+              echo "::warning::'yarn new $*' did not create $expected_path (known upstream issue)"
+            else
+              echo "::error::'yarn new $*' did not create $expected_path"
+              failed=1
+            fi
+          }
+
+          generate plugins/example                            --select frontend-plugin --option pluginId=example
+          generate plugins/example-backend                    --select backend-plugin --option pluginId=example
+          generate plugins/example-module-test                --select frontend-plugin-module --option pluginId=example --option moduleId=test --option pluginPackage=@internal/backstage-plugin-example
+          generate plugins/example-backend-module-test        --select backend-plugin-module --option pluginId=example --option moduleId=test --option pluginPackage=@internal/backstage-plugin-example-backend
+          generate plugins/example-react                      --select plugin-web-library --option pluginId=example
+          generate plugins/example-node                       --select plugin-node-library --option pluginId=example
+          generate plugins/example-common                     --select plugin-common-library --option pluginId=example
+          generate packages/example-web-library               --select web-library --option name=example-web-library
+          generate packages/example-node-library              --select node-library --option name=example-node-library
+          generate plugins/catalog-backend-module-example     --select catalog-provider-module --option moduleId=example
+          generate plugins/scaffolder-backend-module-example  --select scaffolder-backend-module --option moduleId=example
+
+          # These templates currently fail with "No version available for
+          # package <name>": their package.json templates reference packages
+          # (@backstage/cli-common, @backstage/plugin-scaffolder-react) that
+          # are missing from the CLI's built-in version map, and the version
+          # lookup only falls back to the Backstage yarn plugin, which
+          # create-app does not install.
+          generate --broken packages/cli-module-example                --select cli-module --option name=example
+          generate --broken plugins/scaffolder-module-example          --select scaffolder-field-extension-module --option moduleId=example
+
+          exit "$failed"
+
+      - name: Install dependencies and build all plugins
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+        run: |
+          # Refresh the lockfile with the newly generated workspace packages
+          # before the result is committed.
+          yarn install
+
+          # Type-check and build the generated plugins. Failures are reported
+          # as warnings instead of failing the job: this repository exists to
+          # track the generated output over time, so upstream template bugs
+          # should be recorded in the history rather than block the weekly
+          # commit. (At the time of writing, 'yarn tsc' fails because the
+          # catalog-provider-module template does not compile against the
+          # current @backstage/backend-plugin-api logger types.)
+          if ! yarn tsc; then
+            echo "::warning::'yarn tsc' failed for the freshly generated code (see log for details)."
+          fi
+          if ! yarn build:all; then
+            echo "::warning::'yarn build:all' failed for the freshly generated code (see log for details)."
+          fi
+
       - name: Commit and push changes
         run: |
           VERSION=$(node -p "require('./backstage.json').version")
