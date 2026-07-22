@@ -1,0 +1,169 @@
+name: Regenerate Backstage app (next)
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Every Wednesday at 03:30 UTC, half an hour after the main regeneration
+    - cron: '30 3 * * 3'
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Checkout next branch
+        run: |
+          if git ls-remote --exit-code --heads origin next >/dev/null; then
+            echo "Using existing next branch."
+            git fetch origin next
+            git checkout -B next origin/next
+          else
+            echo "No next branch found, starting from main."
+            git checkout -b next
+          fi
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Remove generated files
+        run: |
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' ! -name '.github' ! -name '.patches' -exec rm -rf {} +
+
+      - name: Generate a new Backstage app
+        env:
+          # Yarn defaults to immutable installs when CI is set, which fails
+          # because create-app needs to write the lockfile (YN0028).
+          YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+        run: |
+          BACKSTAGE_APP_NAME=backstage npx -y @backstage/create-app@next --path .
+
+      - name: Compare next version with main version
+        id: version
+        run: |
+          NEXT_VERSION=$(node -p "require('./backstage.json').version")
+          MAIN_VERSION=$(git show origin/main:backstage.json | node -p "JSON.parse(require('fs').readFileSync(0, 'utf8')).version")
+          echo "next tag version: $NEXT_VERSION, main version: $MAIN_VERSION"
+          HIGHEST=$(npx -y semver "$NEXT_VERSION" "$MAIN_VERSION" | tail -n 1)
+          if [ "$NEXT_VERSION" != "$MAIN_VERSION" ] && [ "$HIGHEST" = "$NEXT_VERSION" ]; then
+            echo "next version is newer than main, updating the next branch."
+            echo "mode=update" >> "$GITHUB_OUTPUT"
+          else
+            echo "next version is not newer than main, resetting the next branch to main."
+            echo "mode=reset" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Reset next branch to main
+        if: steps.version.outputs.mode == 'reset'
+        run: |
+          git reset --hard origin/main
+          git clean -fd
+          git push --force origin next
+
+      - name: Verify available plugin types
+        if: steps.version.outputs.mode == 'update'
+        run: |
+          node -e "
+            const templates = require('@backstage/cli-module-new/dist/lib/defaultTemplates.cjs.js').defaultTemplates;
+            const actual = templates.map(t => t.replace('@backstage/cli-module-new/templates/', '')).sort();
+            const expected = [
+              'backend-plugin',
+              'backend-plugin-module',
+              'catalog-provider-module',
+              'cli-module',
+              'frontend-plugin',
+              'frontend-plugin-module',
+              'legacy-frontend-plugin',
+              'node-library',
+              'plugin-common-library',
+              'plugin-node-library',
+              'plugin-web-library',
+              'scaffolder-backend-module',
+              'scaffolder-field-extension-module',
+              'web-library',
+            ];
+            const added = actual.filter(t => !expected.includes(t));
+            const removed = expected.filter(t => !actual.includes(t));
+            if (added.length || removed.length) {
+              if (added.length) console.error('New plugin types added:', added.join(', '));
+              if (removed.length) console.error('Plugin types removed:', removed.join(', '));
+              console.error('Update the generate-plugins step to match.');
+              process.exit(1);
+            }
+            console.log('All', expected.length, 'plugin types verified.');
+          "
+
+      - name: Generate packages
+        if: steps.version.outputs.mode == 'update'
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+        run: |
+          yarn new --select frontend-plugin        --option pluginId=example --skip-install
+          yarn new --select backend-plugin         --option pluginId=example --skip-install
+          yarn new --select plugin-web-library     --option pluginId=example --skip-install
+          yarn new --select plugin-node-library    --option pluginId=example --skip-install
+          yarn new --select plugin-common-library  --option pluginId=example --skip-install
+
+          # Use known pluginIds to avoid interactive pluginPackage prompt;
+          # moduleIds are chosen to avoid directory conflicts between types.
+          yarn new --select frontend-plugin-module --option pluginId=catalog --option moduleId=generic-example --skip-install
+          yarn new --select backend-plugin-module  --option pluginId=catalog --option moduleId=generic-example --skip-install
+          yarn new --select catalog-provider-module   --option moduleId=provider-example --skip-install
+          yarn new --select scaffolder-backend-module --option moduleId=example --skip-install
+
+          yarn new --select web-library  --option name=example-web --skip-install
+          yarn new --select node-library --option name=example-node --skip-install
+
+          # Skipped types:
+          # - legacy-frontend-plugin: filtered out for new-frontend-system apps
+          # - cli-module: versionQuery fails for @backstage/cli-common (upstream bug)
+          # - scaffolder-field-extension-module: versionQuery fails for @backstage/plugin-scaffolder-react (upstream bug)
+
+          yarn install
+
+      - name: Apply patches for upstream template bugs
+        if: steps.version.outputs.mode == 'update'
+        run: |
+          for patch in .patches/*.patch; do
+            echo "Applying $patch"
+            git apply "$patch"
+          done
+
+      - name: Build all packages
+        if: steps.version.outputs.mode == 'update'
+        run: |
+          yarn tsc
+          yarn build:all
+
+      - name: Commit and push changes
+        if: steps.version.outputs.mode == 'update'
+        run: |
+          VERSION=$(node -p "require('./backstage.json').version")
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Regenerate Backstage app $VERSION ($(date -u +%Y-%m-%d))"
+            git push -u origin next
+          fi
+
+      - name: Tag the Backstage release
+        if: steps.version.outputs.mode == 'update'
+        run: |
+          VERSION=$(node -p "require('./backstage.json').version")
+          if git ls-remote --exit-code --tags origin "refs/tags/$VERSION" >/dev/null; then
+            echo "Tag $VERSION already exists, skipping."
+          else
+            git tag "$VERSION"
+            git push origin "refs/tags/$VERSION"
+          fi
