@@ -41,19 +41,22 @@ jobs:
             const templates = require('@backstage/cli-module-new/dist/lib/defaultTemplates.cjs.js').defaultTemplates;
             const actual = templates.map(t => t.replace('@backstage/cli-module-new/templates/', '')).sort();
             const expected = [
-              'backend-plugin',
               'backend-plugin-module',
+              'backend-plugin',
+              'catalog-processor-module',
               'catalog-provider-module',
               'cli-module',
-              'frontend-plugin',
               'frontend-plugin-module',
+              'frontend-plugin',
               'legacy-frontend-plugin',
               'node-library',
+              'permission-policy-module',
               'plugin-common-library',
               'plugin-node-library',
               'plugin-web-library',
               'scaffolder-backend-module',
               'scaffolder-field-extension-module',
+              'search-collator-module',
               'web-library',
             ];
             const added = actual.filter(t => !expected.includes(t));
