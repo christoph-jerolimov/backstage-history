@@ -5374,6 +5374,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@internal/backstage-plugin-permission-backend-module-example@workspace:^, @internal/backstage-plugin-permission-backend-module-example@workspace:plugins/permission-backend-module-example":
+  version: 0.0.0-use.local
+  resolution: "@internal/backstage-plugin-permission-backend-module-example@workspace:plugins/permission-backend-module-example"
+  dependencies:
+    "@backstage/backend-plugin-api": "npm:^1.10.0"
+    "@backstage/backend-test-utils": "npm:^1.11.6"
+    "@backstage/cli": "npm:^0.36.5"
+    "@backstage/plugin-permission-backend": "npm:^0.7.15"
+    "@backstage/plugin-permission-common": "npm:^0.9.9"
+    "@backstage/plugin-permission-node": "npm:^0.11.3"
+  languageName: unknown
+  linkType: soft
+
 "@internal/backstage-plugin-scaffolder-backend-module-example@workspace:^, @internal/backstage-plugin-scaffolder-backend-module-example@workspace:plugins/scaffolder-backend-module-example":
   version: 0.0.0-use.local
   resolution: "@internal/backstage-plugin-scaffolder-backend-module-example@workspace:plugins/scaffolder-backend-module-example"
@@ -13541,6 +13554,7 @@ __metadata:
     "@internal/backstage-plugin-catalog-backend-module-processor-example": "workspace:^"
     "@internal/backstage-plugin-catalog-backend-module-provider-example": "workspace:^"
     "@internal/backstage-plugin-example-backend": "workspace:^"
+    "@internal/backstage-plugin-permission-backend-module-example": "workspace:^"
     "@internal/backstage-plugin-scaffolder-backend-module-example": "workspace:^"
     app: "link:../app"
     better-sqlite3: "npm:^12.0.0"
