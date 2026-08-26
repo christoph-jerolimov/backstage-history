@@ -1,0 +1,11 @@
+--- a/plugins/permission-backend-module-example/src/policy/ExamplePolicy.ts
++++ b/plugins/permission-backend-module-example/src/policy/ExamplePolicy.ts
+@@ -25,6 +25,8 @@ export class ExamplePolicy implements PermissionPolicy {
+ 
+     // TODO: Remove the underscore prefixes from _request and
+     // _ownershipEntityRefs, then use them to implement your authorization rules.
++    // Until then, keep the binding alive for noUnusedLocals.
++    void _ownershipEntityRefs;
+     return { result: AuthorizeResult.ALLOW };
+   }
+ }
