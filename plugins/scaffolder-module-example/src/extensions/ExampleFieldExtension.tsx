@@ -2,10 +2,7 @@ import {
   FormFieldBlueprint,
   createFormField,
 } from '@backstage/plugin-scaffolder-react/alpha';
-import {
-  FieldExtensionComponentProps,
-  makeFieldSchema,
-} from '@backstage/plugin-scaffolder-react';
+import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
 
 export const ExampleField = ({
   onChange,
@@ -34,7 +31,8 @@ export const ExampleFieldExtension = FormFieldBlueprint.make({
         // validation: async (value, validation, { apiHolder }) => {
         //   if (!value) validation.addError('Field is required');
         // },
-        // Uncomment to define schema for the Custom Field Explorer preview:
+        // Uncomment to define schema for the Custom Field Explorer preview,
+        // importing makeFieldSchema from '@backstage/plugin-scaffolder-react':
         // schema: makeFieldSchema({
         //   output: z => z.string(),
         // }),
