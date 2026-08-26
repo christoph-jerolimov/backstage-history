@@ -73,4 +73,5 @@ backend.add(import('@internal/backstage-plugin-example-backend'));
 backend.add(import('@internal/backstage-plugin-catalog-backend-module-generic-example'));
 backend.add(import('@internal/backstage-plugin-catalog-backend-module-provider-example'));
 backend.add(import('@internal/backstage-plugin-scaffolder-backend-module-example'));
+backend.add(import('@internal/backstage-plugin-catalog-backend-module-processor-example'));
 backend.start();
