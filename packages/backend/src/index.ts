@@ -75,4 +75,5 @@ backend.add(import('@internal/backstage-plugin-catalog-backend-module-processor-
 backend.add(import('@internal/backstage-plugin-catalog-backend-module-provider-example'));
 backend.add(import('@internal/backstage-plugin-permission-backend-module-example'));
 backend.add(import('@internal/backstage-plugin-scaffolder-backend-module-example'));
+backend.add(import('@internal/backstage-plugin-search-backend-module-example'));
 backend.start();

@@ -51,6 +51,7 @@
     "@internal/backstage-plugin-example-backend": "workspace:^",
     "@internal/backstage-plugin-permission-backend-module-example": "workspace:^",
     "@internal/backstage-plugin-scaffolder-backend-module-example": "workspace:^",
+    "@internal/backstage-plugin-search-backend-module-example": "workspace:^",
     "app": "link:../app",
     "better-sqlite3": "^12.0.0",
     "node-gyp": "^10.0.0",

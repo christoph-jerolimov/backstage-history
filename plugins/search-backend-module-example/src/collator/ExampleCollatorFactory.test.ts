@@ -1,0 +1,26 @@
+import { ExampleCollatorFactory } from './ExampleCollatorFactory';
+import { mockServices } from '@backstage/backend-test-utils';
+import { TestPipeline } from '@backstage/plugin-search-backend-node';
+
+describe('ExampleCollatorFactory', () => {
+  it('returns a collator with the correct type', async () => {
+    const factory = ExampleCollatorFactory.fromConfig(mockServices.rootConfig(), {
+      logger: mockServices.logger.mock(),
+    });
+
+    expect(factory.type).toBe('example');
+  });
+
+  it('runs the collator and returns documents', async () => {
+    const factory = ExampleCollatorFactory.fromConfig(mockServices.rootConfig(), {
+      logger: mockServices.logger.mock(),
+    });
+
+    const collator = await factory.getCollator();
+    const { error, documents } = await TestPipeline.fromCollator(collator).execute();
+
+    expect(error).toBeUndefined();
+    // TODO: Update this assertion once your collator yields real documents
+    expect(documents).toEqual([]);
+  });
+});
