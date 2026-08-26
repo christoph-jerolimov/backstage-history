@@ -5400,6 +5400,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@internal/backstage-plugin-search-backend-module-example@workspace:^, @internal/backstage-plugin-search-backend-module-example@workspace:plugins/search-backend-module-example":
+  version: 0.0.0-use.local
+  resolution: "@internal/backstage-plugin-search-backend-module-example@workspace:plugins/search-backend-module-example"
+  dependencies:
+    "@backstage/backend-plugin-api": "npm:^1.10.0"
+    "@backstage/backend-test-utils": "npm:^1.11.6"
+    "@backstage/cli": "npm:^0.36.5"
+    "@backstage/config": "npm:^1.3.8"
+    "@backstage/plugin-search-backend": "npm:^2.1.5"
+    "@backstage/plugin-search-backend-node": "npm:^1.4.7"
+    "@backstage/plugin-search-common": "npm:^1.2.24"
+  languageName: unknown
+  linkType: soft
+
 "@internal/example-node@workspace:packages/example-node":
   version: 0.0.0-use.local
   resolution: "@internal/example-node@workspace:packages/example-node"
@@ -13556,6 +13570,7 @@ __metadata:
     "@internal/backstage-plugin-example-backend": "workspace:^"
     "@internal/backstage-plugin-permission-backend-module-example": "workspace:^"
     "@internal/backstage-plugin-scaffolder-backend-module-example": "workspace:^"
+    "@internal/backstage-plugin-search-backend-module-example": "workspace:^"
     app: "link:../app"
     better-sqlite3: "npm:^12.0.0"
     node-gyp: "npm:^10.0.0"
