@@ -91,16 +91,16 @@ jobs:
       - name: Generate example packages, plugins and modules
         run: |
           # Added under packages
-          yarn new --select cli-module             --option name=example --skip-install
+          yarn new --select cli-module   --option name=example --skip-install
           yarn new --select web-library  --option name=example-web --skip-install
           yarn new --select node-library --option name=example-node --skip-install
 
           # Added under plugins
-          yarn new --select frontend-plugin        --option pluginId=example --skip-install
-          yarn new --select backend-plugin         --option pluginId=example --skip-install
-          yarn new --select plugin-web-library     --option pluginId=example --skip-install
-          yarn new --select plugin-node-library    --option pluginId=example --skip-install
-          yarn new --select plugin-common-library  --option pluginId=example --skip-install
+          yarn new --select frontend-plugin       --option pluginId=example --skip-install
+          yarn new --select backend-plugin        --option pluginId=example --skip-install
+          yarn new --select plugin-web-library    --option pluginId=example --skip-install
+          yarn new --select plugin-node-library   --option pluginId=example --skip-install
+          yarn new --select plugin-common-library --option pluginId=example --skip-install
           # Skipped legacy-frontend-plugin to focus on NFS.
 
           # Example moduleIds are chosen in a way to avoid conflicts between the templates.
