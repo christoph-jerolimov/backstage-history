@@ -2,6 +2,11 @@ name: Regenerate Backstage app
 
 on:
   workflow_dispatch:
+    inputs:
+      dryRun:
+        description: 'Regenerate and verify only, without committing or tagging'
+        type: boolean
+        default: false
   schedule:
     # Every Wednesday at 03:00 UTC
     - cron: '0 3 * * 3'
@@ -132,8 +137,8 @@ jobs:
           yarn tsc
           yarn build:all
 
-      - name: Verify no changes (pull requests)
-        if: github.event_name == 'pull_request'
+      - name: Verify no changes (pull requests and dry runs)
+        if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.dryRun)
         run: |
           git add -A
           if git diff --cached --quiet; then
@@ -147,7 +152,7 @@ jobs:
           fi
 
       - name: Commit and push changes
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && !inputs.dryRun)
         run: |
           VERSION=$(node -p "require('./backstage.json').version")
           git config user.name "github-actions[bot]"
@@ -161,7 +166,7 @@ jobs:
           fi
 
       - name: Tag the Backstage release
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && !inputs.dryRun)
         run: |
           VERSION=$(node -p "require('./backstage.json').version")
           if git ls-remote --exit-code --tags origin "refs/tags/$VERSION" >/dev/null; then
