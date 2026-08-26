@@ -5,6 +5,10 @@ on:
   schedule:
     # Every Wednesday at 03:00 UTC
     - cron: '0 3 * * 3'
+  push:
+    branches:
+      - main
+  pull_request:
 
 permissions:
   contents: write
@@ -16,7 +20,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: main
+          # Empty on push/schedule/dispatch -> defaults to the triggering ref
+          # (main). On pull_request, check out the PR branch so its own changes
+          # to the workflow and patches are exercised.
+          ref: ${{ github.head_ref }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -124,7 +131,22 @@ jobs:
           yarn tsc
           yarn build:all
 
+      - name: Verify no changes (pull requests)
+        if: github.event_name == 'pull_request'
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes — the generated app matches the committed sources."
+          else
+            echo "Regeneration produced changes in the following files:"
+            git diff --cached --name-status
+            echo
+            echo "The generated output is out of date. Commit the regenerated app."
+            exit 1
+          fi
+
       - name: Commit and push changes
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           VERSION=$(node -p "require('./backstage.json').version")
           git config user.name "github-actions[bot]"
@@ -138,6 +160,7 @@ jobs:
           fi
 
       - name: Tag the Backstage release
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           VERSION=$(node -p "require('./backstage.json').version")
           if git ls-remote --exit-code --tags origin "refs/tags/$VERSION" >/dev/null; then
