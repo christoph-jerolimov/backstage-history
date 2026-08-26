@@ -102,6 +102,7 @@ jobs:
           yarn new --select backend-plugin-module  --option pluginId=catalog --option moduleId=generic-example --skip-install
           yarn new --select catalog-processor-module   --option moduleId=processor-example --skip-install
           yarn new --select catalog-provider-module   --option moduleId=provider-example --skip-install
+          yarn new --select permission-policy-module --option moduleId=example --skip-install
           yarn new --select scaffolder-backend-module --option moduleId=example --skip-install
 
           yarn new --select web-library  --option name=example-web --skip-install
