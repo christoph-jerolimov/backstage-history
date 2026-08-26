@@ -42,6 +42,7 @@
     "@backstage/ui": "^0.17.1",
     "@internal/backstage-plugin-catalog-module-generic-example": "workspace:^",
     "@internal/backstage-plugin-example": "workspace:^",
+    "@internal/backstage-plugin-scaffolder-module-example": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "react": "^18.0.2",
