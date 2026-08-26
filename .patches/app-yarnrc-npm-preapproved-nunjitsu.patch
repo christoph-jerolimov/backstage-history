@@ -1,0 +1,9 @@
+--- a/.yarnrc.yml
++++ b/.yarnrc.yml
+@@ -2,5 +2,6 @@ nodeLinker: node-modules
+ npmMinimalAgeGate: 3d
+ npmPreapprovedPackages:
+   - '@backstage/*'
++  - 'nunjitsu'
+
+ yarnPath: .yarn/releases/yarn-4.13.0.cjs
