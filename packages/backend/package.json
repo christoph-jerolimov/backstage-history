@@ -46,6 +46,7 @@
     "@backstage/plugin-techdocs-backend": "^2.2.3",
     "@backstage/plugin-user-settings-backend": "^0.4.6",
     "@internal/backstage-plugin-catalog-backend-module-generic-example": "workspace:^",
+    "@internal/backstage-plugin-catalog-backend-module-processor-example": "workspace:^",
     "@internal/backstage-plugin-catalog-backend-module-provider-example": "workspace:^",
     "@internal/backstage-plugin-example-backend": "workspace:^",
     "@internal/backstage-plugin-scaffolder-backend-module-example": "workspace:^",
