@@ -1,0 +1,46 @@
+{
+  "name": "@internal/backstage-plugin-scaffolder-module-example",
+  "version": "0.1.0",
+  "license": "UNLICENSED",
+  "private": true,
+  "description": "The example field extension module for the Backstage Scaffolder.",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "frontend-plugin-module",
+    "pluginId": "scaffolder",
+    "pluginPackage": "@backstage/plugin-scaffolder"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
+  },
+  "dependencies": {
+    "@backstage/frontend-plugin-api": "^0.18.0",
+    "@backstage/plugin-scaffolder-react": "^2.0.3"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.36.5",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "react": "^18.0.0"
+  },
+  "peerDependencies": {
+    "react": "^17.0.0 || ^18.0.0"
+  },
+  "files": [
+    "dist"
+  ]
+}

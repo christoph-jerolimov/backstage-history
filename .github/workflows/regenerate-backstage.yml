@@ -88,33 +88,30 @@ jobs:
             console.log('All', expected.length, 'plugin types verified.');
           "
 
-      - name: Generate example plugins and modules
+      - name: Generate example packages, plugins and modules
         run: |
-          yarn new --select cli-module             --option name=example --skip-install
-
-          yarn new --select frontend-plugin        --option pluginId=example --skip-install
-          yarn new --select backend-plugin         --option pluginId=example --skip-install
-          yarn new --select plugin-web-library     --option pluginId=example --skip-install
-          yarn new --select plugin-node-library    --option pluginId=example --skip-install
-          yarn new --select plugin-common-library  --option pluginId=example --skip-install
-
-          # Use known pluginIds to avoid interactive pluginPackage prompt;
-          # moduleIds are chosen to avoid directory conflicts between types.
-          yarn new --select frontend-plugin-module --option pluginId=catalog --option moduleId=generic-example --skip-install
-          yarn new --select backend-plugin-module  --option pluginId=catalog --option moduleId=generic-example --skip-install
-          yarn new --select catalog-processor-module   --option moduleId=processor-example --skip-install
-          yarn new --select catalog-provider-module   --option moduleId=provider-example --skip-install
-          yarn new --select permission-policy-module --option moduleId=example --skip-install
-          yarn new --select scaffolder-backend-module --option moduleId=example --skip-install
-          yarn new --select search-collator-module --option moduleId=example --skip-install
-
+          # Added under packages
+          yarn new --select cli-module   --option name=example --skip-install
           yarn new --select web-library  --option name=example-web --skip-install
           yarn new --select node-library --option name=example-node --skip-install
 
-          # Skipped templates:
-          # - legacy-frontend-plugin: filtered out for new-frontend-system apps
-          # - scaffolder-field-extension-module: versionQuery fails for @backstage/plugin-scaffolder-react (upstream bug)
+          # Added under plugins
+          yarn new --select frontend-plugin       --option pluginId=example --skip-install
+          yarn new --select backend-plugin        --option pluginId=example --skip-install
+          yarn new --select plugin-web-library    --option pluginId=example --skip-install
+          yarn new --select plugin-node-library   --option pluginId=example --skip-install
+          yarn new --select plugin-common-library --option pluginId=example --skip-install
+          # Skipped legacy-frontend-plugin to focus on NFS.
 
+          # Example moduleIds are chosen in a way to avoid conflicts between the templates.
+          yarn new --select frontend-plugin-module            --option pluginId=catalog --option moduleId=generic-example --skip-install
+          yarn new --select backend-plugin-module             --option pluginId=catalog --option moduleId=generic-example --skip-install
+          yarn new --select catalog-processor-module          --option moduleId=processor-example --skip-install
+          yarn new --select catalog-provider-module           --option moduleId=provider-example --skip-install
+          yarn new --select permission-policy-module          --option moduleId=example --skip-install
+          yarn new --select scaffolder-backend-module         --option moduleId=example --skip-install
+          yarn new --select scaffolder-field-extension-module --option moduleId=example --skip-install
+          yarn new --select search-collator-module            --option moduleId=example --skip-install
       - name: Apply patches for upstream template bugs
         run: |
           for patch in .patches/plugins-*.patch; do
