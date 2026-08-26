@@ -90,6 +90,8 @@ jobs:
 
       - name: Generate example plugins and modules
         run: |
+          yarn new --select cli-module             --option name=example --skip-install
+
           yarn new --select frontend-plugin        --option pluginId=example --skip-install
           yarn new --select backend-plugin         --option pluginId=example --skip-install
           yarn new --select plugin-web-library     --option pluginId=example --skip-install
@@ -109,9 +111,8 @@ jobs:
           yarn new --select web-library  --option name=example-web --skip-install
           yarn new --select node-library --option name=example-node --skip-install
 
-          # Skipped types:
+          # Skipped templates:
           # - legacy-frontend-plugin: filtered out for new-frontend-system apps
-          # - cli-module: versionQuery fails for @backstage/cli-common (upstream bug)
           # - scaffolder-field-extension-module: versionQuery fails for @backstage/plugin-scaffolder-react (upstream bug)
 
       - name: Apply patches for upstream template bugs
